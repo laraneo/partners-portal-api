@@ -12,8 +12,8 @@
 -   `update database credentials, lines 13 and 14 in .env`
 -   `composer install`
 -   `php artisan migrate`
-    `php artisan key:generate`
-    `php artisan passport:install`
+-   `php artisan key:generate`
+-   `php artisan passport:install`
 -   `php artisan passport:client --personal`
 -   `put any name for passport credentials`
 -   `php artisan db:seed`
