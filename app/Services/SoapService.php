@@ -20,16 +20,18 @@ class SoapService
     TasaCambioRepository $tasaCambioRepository
   ) {
 		$this->url = env('WS_SOCIO_URL');
-		$this->domain = env('WS_SOCIO_DOMAIN_ID');
+    $this->domain = env('WS_SOCIO_DOMAIN_ID');
+    $this->urlExt = env('WS_SOCIOEXT_URL');
+		$this->domainExt = env('WS_SOCIOEXT_DOMAIN_ID');
 		$this->consultaSaldosRepository = $consultaSaldosRepository;
 		$this->estadoCuentaRepository = $estadoCuentaRepository;
 		$this->saldoRepository = $saldoRepository;
 		$this->tasaCambioRepository = $tasaCambioRepository;
 	}
 
-  public function getToken() {
+  public function getToken($domain) {
     date_default_timezone_set('America/Caracas');
-    $domain_id =  $this->domain;
+    $domain_id =  $domain;
     $date = date('Ymd');
     $calculated_token = md5($domain_id.$date);
     $calculated_token = base64_encode(strtoupper(md5($domain_id.$date )));
@@ -59,30 +61,54 @@ class SoapService
     }
   }
 
-    public function getSaldo() {
+  public function getSaldo() {
+    try{
+      $url = $this->url;
+      $client = $this->getWebServiceClient($url);
+        $user = auth()->user()->username;
+        $response = $client->getSaldoXML([
+          'group_id' => $user,
+          'token' => $this->getToken($this->domain),
+        ])->GetSaldoXMLResult;
+        $i = 0;
+        $newArray = array();
+          foreach ($response as $key => $value) {
+            if ($i==1) {
+              $myxml = simplexml_load_string($value);				
+              $registros= $myxml->NewDataSet->Table;
+              $arrlength = @count($registros);
+              for($x = 0; $x < $arrlength; $x++) {
+                array_push($newArray, $registros[$x]);
+              }
+            }
+            $i++;
+          }
+          return $newArray[0];
+      }
+      catch(SoapFault $fault) {
+          echo '<br>'.$fault;
+          return response()->json([
+            'success' => false,
+            'message' => 'En estos momentos la informacion no esta disponible'
+        ])->setStatusCode(500);
+      }
+}
+
+    public function getSaldoTotal() {
       try{
-        $url = $this->url;
+        $url = $this->urlExt;
         $client = $this->getWebServiceClient($url);
           $user = auth()->user()->username;
-          $response = $client->getSaldoXML([
+          $response = $client->GetSaldoTotal([
             'group_id' => $user,
-            'token' => $this->getToken(),
-          ])->GetSaldoXMLResult;
+            'token' => $this->getToken($this->domainExt),
+          ])->GetSaldoTotalResult;
           $i = 0;
-          $newArray = array();
-            foreach ($response as $key => $value) {
-              if ($i==1) {
-                $myxml = simplexml_load_string($value);				
-                $registros= $myxml->NewDataSet->Table;
-                $arrlength = @count($registros);
-                for($x = 0; $x < $arrlength; $x++) {
-                  array_push($newArray, $registros[$x]);
-                }
-              }
-              $i++;
+            $saldo = explode(";", $response);
+            if($saldo[0]) {
+              return number_format((float)$saldo[0],2);
             }
-            $this->saldoRepository->deleteAndInsert($newArray[0]);
-            return $newArray;
+            return 0;
         }
         catch(SoapFault $fault) {
             echo '<br>'.$fault;
@@ -99,7 +125,7 @@ class SoapService
         $client = $this->getWebServiceClient($url);
         $response = $client->GetSaldoDetalladoXML([
             'group_id' => $share,
-            'token' => $this->getToken(),
+            'token' => $this->getToken($this->domain),
         ])->GetSaldoDetalladoXMLResult;
         $i = 0;
         $newArray = array();
@@ -148,7 +174,7 @@ class SoapService
         $client = $this->getWebServiceClient($url);
         $response = $client->GetSaldoDetalladoXML([
             'group_id' => $share,
-            'token' => $this->getToken(),
+            'token' => $this->getToken($this->domain),
         ])->GetSaldoDetalladoXMLResult;
         $i = 0;
         $newArray = array();
@@ -206,7 +232,7 @@ class SoapService
         $user = auth()->user()->username;
         $response = $client->GetReportePagosXML([
             'group_id' => $user,
-            'token' => $this->getToken(),
+            'token' => $this->getToken($this->domain),
         ])->GetReportePagosXMLResult;
         $i = 0;
         $newArray = array();
@@ -241,7 +267,7 @@ class SoapService
     $user = auth()->user()->username;
     $parametros = [
       'group_id' => $user,
-      'token' => $this->getToken(),
+      'token' => $this->getToken($this->domain),
     ];
     try{
       $response = $client->GetEstadoCuentaXML($parametros)->GetEstadoCuentaXMLResult;
@@ -286,14 +312,14 @@ class SoapService
 }
 
 public function getTasaDelDia() {
-  $url = $this->url;
+  $url = $this->urlExt;
   $client = $this->getWebServiceClient($url);
   $date = date('Y-m-d');
 
   try {
     $parametros = [
       'mone_co' => 'US$',
-      'token' => $this->getToken(),
+      'token' => $this->getToken($this->domainExt),
     ];
     $response = $client->GetUltimaTasaCambioXML($parametros)->GetUltimaTasaCambioXMLResult;
     $i = 0;

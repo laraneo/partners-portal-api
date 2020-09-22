@@ -10,6 +10,7 @@ use App\Services\SoapService;
 use App\BackOffice\Services\ConsultaSaldosService;
 use App\BackOffice\Services\EstadoCuentaService;
 use App\BackOffice\Services\SaldoService;
+use App\BackOffice\Repositories\SaldoRepository;
 
 class WebServiceController extends Controller
 {
@@ -18,13 +19,15 @@ class WebServiceController extends Controller
     SoapService $soapService,
     ConsultaSaldosService $consultaSaldosService,
     EstadoCuentaService $estadoCuentaService,
-    SaldoService $saldoService
+    SaldoService $saldoService,
+    SaldoRepository $saldoRepository
     )
 	{
 		$this->soapService = $soapService;
 		$this->consultaSaldosService = $consultaSaldosService;
 		$this->estadoCuentaService = $estadoCuentaService;
-		$this->saldoService = $saldoService;
+    $this->saldoService = $saldoService;
+    $this->saldoRepository = $saldoRepository;
     }
 
   public function getBalance(Request $request)  { 
@@ -32,8 +35,11 @@ class WebServiceController extends Controller
     if($request['isCache'] == "true") {
       return $this->saldoService->index($user);
     }
-    $data = $this->soapService->getSaldo();
-    $data[0]->saldo = number_format((float)$data[0]->saldo,2);
+    $saldo = $this->soapService->getSaldoTotal();
+    $vigencia = $this->soapService->getSaldo();
+    $vigencia = get_object_vars($vigencia);
+    $data = (object)['saldo' => $saldo, 'status' => $vigencia['status'] ];
+    $this->saldoRepository->deleteAndInsert($data);
     return response()->json([
       'cache' => true,
       'success' => true,
