@@ -5,4 +5,8 @@
 -- ALTER TABLE users ADD share_from VARCHAR(255) NULL;
 -- ALTER TABLE users ADD share_to VARCHAR(255) NULL;
 
-ALTER TABLE users ADD username_legacy varchar(255) NULL;
+-- ALTER TABLE users ADD username_legacy varchar(255) NULL;
+
+ALTER TABLE users ADD group_id varchar(255) NULL;
+ALTER TABLE users ADD is_active INT NULL;
+ALTER TABLE users ADD role INT NULL;
