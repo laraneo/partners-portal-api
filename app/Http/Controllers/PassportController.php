@@ -60,17 +60,26 @@ class PassportController extends Controller
                 'message' => 'Usuario no existe'
             ])->setStatusCode(401);
         }
+
         $credentials = [
             'username' => $exist->username,
             'password' => $request->password
         ];
  
         if ($exist && auth()->attempt($credentials)) {
+
+            if($exist && $exist->is_active == 0) {
+                return response()->json([
+                    'succeswes' => false,
+                    'message' => 'Usuario inactivo'
+                ])->setStatusCode(401);
+            }
+    
             $token = auth()->user()->createToken('TutsForWeb')->accessToken;
             $user = auth()->user();
             $user->roles = auth()->user()->getRoles();
             $newRoles = Role::where('id', auth()->user()->id)->get();
-            $person = $this->shareRepository->findByShare($request->username);
+            $person = $exist->group_id !== null ? $this->shareRepository->findByShare($exist->group_id) : null;
             if($person) {
                 $user->partnerProfile = $person->partner()->first();
             }

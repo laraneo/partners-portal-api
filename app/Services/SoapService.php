@@ -65,7 +65,7 @@ class SoapService
     try{
       $url = $this->url;
       $client = $this->getWebServiceClient($url);
-        $user = auth()->user()->username;
+        $user = auth()->user()->group_id;
         $response = $client->getSaldoXML([
           'group_id' => $user,
           'token' => $this->getToken($this->domain),
@@ -98,7 +98,7 @@ class SoapService
       try{
         $url = $this->urlExt;
         $client = $this->getWebServiceClient($url);
-          $user = auth()->user()->username;
+          $user = auth()->user()->group_id;
           $response = $client->GetSaldoTotal([
             'group_id' => $user,
             'token' => $this->getToken($this->domainExt),

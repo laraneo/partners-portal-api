@@ -28,6 +28,12 @@ class User extends Authenticatable
         'group_id',
         'is_active',
         'role',
+        'last_name',
+        'SyncDateModules',
+        'SyncDateToken',
+        'phone_number',
+        'ControlSocios_people_id',
+        'isPartner',
     ];
 
     /**

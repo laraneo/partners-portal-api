@@ -31,7 +31,7 @@ class WebServiceController extends Controller
     }
 
   public function getBalance(Request $request)  { 
-    $user = auth()->user()->username;
+    $user = auth()->user()->group_id;
     if($request['isCache'] == "true") {
       return $this->saldoService->index($user);
     }
@@ -48,7 +48,7 @@ class WebServiceController extends Controller
   }
 
   public function getUnpaidInvoices(Request $request)  {
-    $user = auth()->user()->username;
+    $user = auth()->user()->group_id;
     if($request['isCache'] == "true") {
       return $this->consultaSaldosService->index($user);
     }
@@ -68,7 +68,7 @@ class WebServiceController extends Controller
   }
 
   public function getStatusAccount(Request $request)  {
-    $user = auth()->user()->username;
+    $user = auth()->user()->group_id;
     if($request['isCache'] == "true") {
       return $this->estadoCuentaService->index($user);
     }
@@ -82,7 +82,7 @@ class WebServiceController extends Controller
   
   public function getOrder(Request $request){
     
-    $user = auth()->user()->username;
+    $user = auth()->user()->group_id;
     $data = \DB::connection('sqlsrv_backoffice')->statement('exec sp_PortalProcesarPagoFactura ?,?,?,?,?', 
     array($user,$request['invoice'], $request['amount'],$request['order'], $request['dTasa']));  
    
@@ -136,7 +136,7 @@ class WebServiceController extends Controller
 
   public function setManualInvoicePayment(Request $request){
     
-    $user = auth()->user()->username;
+    $user = auth()->user()->group_id;
     $data = \DB::connection('sqlsrv_backoffice')->statement('exec sp_PortalPagoFacturaManual ?,?,?,?,?', 
     array($request['share'],$request['numFactura'], $request['idPago'], $request['fechaPago'], 'MANUAL'));  
    
