@@ -96,4 +96,9 @@ class ReportePagosRepository  {
 
       return $search;
     }
+
+    public function delete($id) {
+      return $this->model->query()->where('idPago', $id)->delete();
+     }
+ 
 }

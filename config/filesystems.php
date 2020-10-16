@@ -71,6 +71,10 @@ return [
             'driver' => 'local',
             'root' => public_path('storage/reportedPayments'),
         ],
+        'applicants' => [
+            'driver' => 'local',
+            'root' => public_path('storage/applicants'),
+        ],
     ],
 
 ];

@@ -321,10 +321,12 @@ public function getTasaDelDia() {
       'mone_co' => 'US$',
       'token' => $this->getToken($this->domainExt),
     ];
+
     $response = $client->GetUltimaTasaCambioXML($parametros)->GetUltimaTasaCambioXMLResult;
     $i = 0;
     $newArray = array();
     $tasa = '';
+    
     foreach ($response as $key => $value) {
       if ($i==1) {
         $myxml = simplexml_load_string($value);				

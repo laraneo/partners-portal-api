@@ -85,7 +85,7 @@ class PassportController extends Controller
             }
             return response()->json(['token' => $token, 'user' =>  $user, 'userRoles' => $user->roles()->get()], 200);
         } else {
-            return response()->json([
+        return response()->json([
                 'success' => false,
                 'message' => 'Credenciales incorrectas'
             ])->setStatusCode(401);
@@ -100,5 +100,17 @@ class PassportController extends Controller
     public function details()
     {
         return response()->json(['user' => auth()->user()], 200);
+    }
+
+    public function logout(Request $request) {
+        $user = User::query()->where('doc_id', $request['doc_id'])->first();
+        \DB::table('oauth_access_tokens')
+        ->where('user_id', $user->id)
+        ->update([
+            'revoked' => true
+        ]);
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ]);
     }
 }

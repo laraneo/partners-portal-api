@@ -54,23 +54,33 @@ class ReportePagosService {
 		$attributes['isSync'] = 0;
 		$attributes['dCreated'] = Carbon::now();
 		$data = $this->repository->create($attributes);
-		if($attributes['file1'] !== null) {
-			$hash = bcrypt(rand());
-			$hash = substr($hash,0,20);
-			$parseFile = $this->validateFile($attributes['file1']);
-			$filename = $date.'-'.$data->id.'-'.$hash.'.'.$parseFile->ext;
-			
-			if($parseFile->ext === 'png' || $parseFile->ext === 'jpg' || $parseFile->ext === 'jpeg' ) {
-				if($parseFile->ext === 'jpg' || $parseFile->ext === 'jpeg') {
-					$filename = $date.'-'.$data->id.'-'.$hash.'.png';
+		
+		try {
+			if($attributes['file1'] !== null) {
+				$hash = bcrypt(rand());
+				$hash = substr($hash,0,20);
+				$parseFile = $this->validateFile($attributes['file1']);
+				$filename = $date.'-'.$data->id.'-'.$hash.'.'.$parseFile->ext;
+				
+				if($parseFile->ext === 'png' || $parseFile->ext === 'jpg' || $parseFile->ext === 'jpeg' ) {
+					if($parseFile->ext === 'jpg' || $parseFile->ext === 'jpeg') {
+						$filename = $date.'-'.$data->id.'-'.$hash.'.png';
+					}
+					\Image::make($attributes['file1'])->save(public_path('storage/reportedPayments/').$filename);
+				} else {
+					//Storage::disk('payments')->put($filename,$parseFile->content);
+					\File::put(public_path(). '/storage/reportedPayments/' . $filename, $parseFile->content);
 				}
-				\Image::make($attributes['file1'])->save(public_path('storage/reportedPayments/').$filename);
-			} else {
-				//Storage::disk('payments')->put($filename,$parseFile->content);
-				\File::put(public_path(). '/storage/reportedPayments/' . $filename, $parseFile->content);
+				$attr = [ 'Archivos' => $filename, 'status' => $attributes['status']];
+				$this->repository->update($data->id, $attr);
+				return $data;
 			}
-			$attr = [ 'Archivos' => $filename, 'status' => $attributes['status']];
-			$this->repository->update($data->id, $attr);
+		} catch (\Throwable $th) {
+			$this->repository->delete($data->id);
+			return response()->json([
+				'success' => false,
+				'message' => 'No se pudo subir el archivo , intentar nuevamente'
+			])->setStatusCode(400);
 		}
 
 		return $data;

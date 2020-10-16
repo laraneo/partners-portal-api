@@ -15,6 +15,7 @@ Route::prefix('api/v1')->group(function () {
     Route::post('/auth/login', 'PassportController@login');
     Route::post('/auth/register', 'PassportController@register');
     Route::get('/parameter-logo', 'ParameterController@getLogo');
+    Route::get('/logout', 'PassportController@logout');
     Route::middleware('auth:api')->group(function () {
 
         
@@ -213,6 +214,11 @@ Route::prefix('api/v1')->group(function () {
 
         
         Route::get('/get-tasa', 'TasaCambioController@index');
+
+        Route::resource('/applicants', 'ApplicantsController');
+        Route::get('/applicants-list', 'ApplicantsController@getList');
+        Route::get('/applicants-search', 'ApplicantsController@search');
+        Route::get('/applicants-active', 'ApplicantsController@getCurrentApplicants');
         
     });
 });
@@ -225,6 +231,7 @@ Route::get('/login-token', 'LoginTokenController@find');
 Route::get('/get-saldo', 'WebServiceController@getSaldo');
 
 Route::get('/forced-login', 'UserController@forcedLogin');
+
 
 Route::get('/', function () {
     return view('welcome');
