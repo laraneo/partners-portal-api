@@ -24,9 +24,9 @@ class ReportePagosRepository  {
     }
 
     public function findByLogin() {
-      $login = auth()->user()->username;
+      $login = auth()->user()->group_id;
 
-      return $this->model->where('Login', '0084-0084')->get();
+      return $this->model->where('Login', $login)->get();
     }
 
     public function find($id) {
@@ -38,7 +38,7 @@ class ReportePagosRepository  {
       }
 
     public function update($id, array $attributes) {
-        $user = auth()->user()->username;
+        $user = auth()->user()->group_id;
         if($attributes['status'] == 2) {
           return \DB::connection('sqlsrv_backoffice')->statement('exec sp_PortalProcesarPago ?', array($id));
         }
