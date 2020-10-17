@@ -43,12 +43,7 @@ class ApplicantsService {
         if(!Storage::exists('/storage/applicants')) {
             Storage::disk('public')->makeDirectory('applicants',0777, true, true);
         }
-        if ($this->repository->checkRecord($attributes['sCI'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'El Aspirante ya existe'
-            ])->setStatusCode(400);
-        }
+
         $date = Carbon::now()->format('Y-m-d');
         $body = [
             'sApellidos' => $attributes['sApellidos'],
@@ -60,40 +55,44 @@ class ApplicantsService {
             'nStatus' => 1,
         ];
         $data = $this->repository->create($body);
-        if($attributes['pictureFile'] !== null) {
-            $hash = bcrypt($data->id.$date);
-            $hash = substr($hash,0,20);
-            $parseFile = $this->validateFile($attributes['pictureFile']);
-            $filename = $attributes['sCI'].'.'.$parseFile->ext;
-            
-            if($parseFile->ext === 'png' || $parseFile->ext === 'jpg' || $parseFile->ext === 'jpeg' ) {
-                if($parseFile->ext === 'jpg' || $parseFile->ext === 'jpeg') {
-                    $filename = $date.'-'.$data->id.'-'.$hash.'.png';
-                }
-                \Image::make($attributes['pictureFile'])->save(public_path('storage/applicants/').$filename);
-            } 
-            $attr = [ 'picture' => $filename];
-            $this->repository->update($data->id, $attr);
-        }
-        if($attributes['file'] !== null) {
-            $hash = bcrypt($data->id.$date);
-            $hash = substr($hash,0,20);
-            $parseFile = $this->validateFile($attributes['file']);
-            $filename = $data->id.'-'.$date.'-'.$hash.'.'.$parseFile->ext;
-            
-            if($parseFile->ext === 'png' || $parseFile->ext === 'jpg' || $parseFile->ext === 'jpeg' ) {
-                if($parseFile->ext === 'jpg' || $parseFile->ext === 'jpeg') {
-                    $filename = $date.'-'.$data->id.'-'.$hash.'.png';
-                }
-                \Image::make($attributes['file'])->save(public_path('storage/applicants/').$filename);
-            } else {
-                //Storage::disk('payments')->put($filename,$parseFile->content);
-                \File::put(public_path(). '/storage/applicants/' . $filename, $parseFile->content);
+        try {
+            if($attributes['pictureFile'] !== null) {
+                $hash = bcrypt($data->id.$date);
+                $hash = substr($hash,0,20);
+                $parseFile = $this->validateFile($attributes['pictureFile']);
+                $filename = $attributes['sCI'].'.'.$parseFile->ext;
+                
+                if($parseFile->ext === 'png' || $parseFile->ext === 'jpg' || $parseFile->ext === 'jpeg' ) {
+                    if($parseFile->ext === 'jpg' || $parseFile->ext === 'jpeg') {
+                        $filename = $attributes['sCI'].'.png';
+                    }
+                    \Image::make($attributes['pictureFile'])->save(public_path('storage/applicants/').$filename);
+                } 
+                $attr = [ 'picture' => $filename];
+                $this->repository->update($data->id, $attr);
             }
-            $attr = [ 'sArchivo' => $filename];
-            $this->repository->update($data->id, $attr);
+            if($attributes['file'] !== null) {
+                $hash = bcrypt($data->id.$date);
+                $hash = substr($hash,0,20);
+                $parseFile = $this->validateFile($attributes['file']);
+                $filename = $data->id.'-'.$date.'-'.$hash.'.'.$parseFile->ext;
+                
+                if($parseFile->ext === 'png' || $parseFile->ext === 'jpg' || $parseFile->ext === 'jpeg' ) {
+                    if($parseFile->ext === 'jpg' || $parseFile->ext === 'jpeg') {
+                        $filename = $date.'-'.$data->id.'-'.$hash.'.png';
+                    }
+                    \Image::make($attributes['file'])->save(public_path('storage/applicants/').$filename);
+                } else {
+                    //Storage::disk('payments')->put($filename,$parseFile->content);
+                    \File::put(public_path(). '/storage/applicants/' . $filename, $parseFile->content);
+                }
+                $attr = [ 'sArchivo' => $filename];
+                $this->repository->update($data->id, $attr);
+            }
+            return $data;
+        } catch (\Throwable $th) {
+            $this->repository->delete($data->id);
         }
-        return $data;
 
 		
 

@@ -100,7 +100,7 @@ class ApplicantsRepository  {
         $applicantsArray = array();
         foreach ($applicants as $key => $value) {
             $daysExpiration = Carbon::parse($value->dCreated)->addDays($dayParameter->value);
-            if($daysExpiration <= Carbon::now()) {
+            if($daysExpiration > Carbon::now()) {
                 if($value->picture !== null) {
                     $applicants[$key]->picture = url('storage/applicants/'.$value->picture);
                 } else {
