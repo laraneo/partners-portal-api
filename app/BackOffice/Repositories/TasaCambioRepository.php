@@ -35,4 +35,8 @@ class TasaCambioRepository  {
       return null;
 
     }
+
+    public function getExchange($exchange) {
+      return $this->model->where('dTasa', $exchange)->first();
+    }
 }

@@ -347,7 +347,9 @@ public function getTasaDelDia() {
       'dCreated' => Carbon::now(),
     ];
     $this->tasaCambioRepository->store($attr);
-    return $attr;
+    $currentExchange = $this->tasaCambioRepository->getExchange($tasa->tasa);
+   
+    return $currentExchange;
   } catch(SoapFault $fault) {
       echo '<br>'.$fault;
       return response()->json([
