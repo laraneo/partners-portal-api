@@ -94,7 +94,7 @@ class ApplicantsRepository  {
 
     public function getCurrentApplicants() {
         $dayParameter = $this->parameterModel->query()->where('parameter', 'APPLICANT_EXPIRATIONDAYS')->first();
-        $applicants = $this->model->all();
+        $applicants = $this->model->query()->where('nStatus',1)->get();
 
 
         $applicantsArray = array();
