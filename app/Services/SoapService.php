@@ -229,7 +229,7 @@ class SoapService
     $url = $this->url;
     try{
         $client = $this->getWebServiceClient($url);
-        $user = auth()->user()->username;
+        $user = auth()->user()->group_id;
         $response = $client->GetReportePagosXML([
             'group_id' => $user,
             'token' => $this->getToken($this->domain),
@@ -264,7 +264,7 @@ class SoapService
     //$url = "http://190.216.224.53:8080/wsServiciosSociosCCC3/wsSociosCCC.asmx?WSDL";
     $url = $this->url;
     $client = $this->getWebServiceClient($url);
-    $user = auth()->user()->username;
+    $user = auth()->user()->group_id;
     $parametros = [
       'group_id' => $user,
       'token' => $this->getToken($this->domain),

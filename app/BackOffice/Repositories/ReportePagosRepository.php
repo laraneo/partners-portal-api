@@ -26,7 +26,7 @@ class ReportePagosRepository  {
     public function findByLogin() {
       $login = auth()->user()->group_id;
 
-      return $this->model->where('Login', $login)->get();
+      return $this->model->where('Login', $login)->with(['cuenta','bancoOrigen'])->get();
     }
 
     public function find($id) {
