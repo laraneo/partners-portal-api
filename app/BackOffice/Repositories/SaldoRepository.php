@@ -49,7 +49,7 @@ class SaldoRepository  {
     }
 
     public function deleteAndInsert($data) {
-        $user = auth()->user()->username;
+        $user = auth()->user()->group_id;
         $this->model->query()->where('co_cli', $user)->delete();
         $this->model->create([
             'co_cli' => $user, 
