@@ -35,7 +35,7 @@ class ClientesController extends Controller
      */
     public function findByNit(Request $request)
     {
-        $shareLogin = auth()->user()->username;
+        $shareLogin = auth()->user()->group_id;
         $data = $this->service->findByNit($shareLogin);
         return response()->json([
             'success' => true,

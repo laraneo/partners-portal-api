@@ -269,7 +269,7 @@ class PersonService {
 	}
 
 	public function getFamilyByPartner($share) {
-		$shareUser = auth()->user()->username;
+		$shareUser = auth()->user()->group_id;
 		$person = $this->shareRepository->findByShare($shareUser);
 		return $this->person->getFamilyByPartner($person->partner->id);
 	}

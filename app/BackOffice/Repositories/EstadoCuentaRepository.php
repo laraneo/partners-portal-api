@@ -59,7 +59,7 @@ class EstadoCuentaRepository  {
     }
 
     public function deleteAndInsert($data) {
-        $user = auth()->user()->username;
+        $user = auth()->user()->group_id;
         $this->model->query()->where('co_cli', $user)->delete();
         foreach ($data as $key => $value) {
             $this->model->create([
