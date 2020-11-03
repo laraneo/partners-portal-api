@@ -3,11 +3,8 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Lista de estatus de Control de Acceso
+    | Credenciales para el Webservice
     |--------------------------------------------------------------------------
-    |
-    | Esta opcion muestra la lista de diferentes casos de error para el
-    | registro de control de acceso, categorizadas por estatus
     |
     */
     'param' => [
