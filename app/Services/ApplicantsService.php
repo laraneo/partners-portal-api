@@ -73,7 +73,7 @@ class ApplicantsService {
             }
             if($attributes['file'] !== null) {
                 $hash = bcrypt($data->id.$date);
-                $hash = substr($hash,0,20);
+                $hash = substr($hash,0,10);
                 $parseFile = $this->validateFile($attributes['file']);
                 $filename = $data->id.'-'.$date.'-'.$hash.'.'.$parseFile->ext;
                 
@@ -92,6 +92,10 @@ class ApplicantsService {
             return $data;
         } catch (\Throwable $th) {
             $this->repository->delete($data->id);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error durante el registro , vuelva a intentarlo'
+            ])->setStatusCode(400);
         }
 
 		
