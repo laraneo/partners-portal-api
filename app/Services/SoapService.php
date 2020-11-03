@@ -9,6 +9,7 @@ use App\BackOffice\Repositories\TasaCambioRepository;
 
 use SoapClient;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
 
 class SoapService
 {
@@ -19,10 +20,10 @@ class SoapService
     SaldoRepository $saldoRepository,
     TasaCambioRepository $tasaCambioRepository
   ) {
-		$this->url = env('WS_SOCIO_URL');
-    $this->domain = env('WS_SOCIO_DOMAIN_ID');
-    $this->urlExt = env('WS_SOCIOEXT_URL');
-		$this->domainExt = env('WS_SOCIOEXT_DOMAIN_ID');
+		$this->url = Config::get('webservice.param.WS_SOCIO_URL');
+    $this->domain = Config::get('webservice.param.WS_SOCIO_DOMAIN_ID');
+    $this->urlExt = Config::get('webservice.param.WS_SOCIOEXT_URL');
+		$this->domainExt = Config::get('webservice.param.WS_SOCIOEXT_DOMAIN_ID');
 		$this->consultaSaldosRepository = $consultaSaldosRepository;
 		$this->estadoCuentaRepository = $estadoCuentaRepository;
 		$this->saldoRepository = $saldoRepository;
