@@ -94,7 +94,7 @@ class ApplicantsService {
             $this->repository->delete($data->id);
             return response()->json([
                 'success' => false,
-                'message' => 'Error durante el registro , vuelva a intentarlo'
+                'message' => 'Error durante el registro'
             ])->setStatusCode(400);
         }
 
