@@ -62,12 +62,12 @@ class UserService {
 			}
 
 
-			if ($this->repository->checkFieldBeforeUpdate('email' ,$request['email'], $id)) {
-				return response()->json([
-					'success' => false,
-					'message' => 'El correo ya existe'
-				])->setStatusCode(400);
-			}
+			// if ($this->repository->checkFieldBeforeUpdate('email' ,$request['email'], $id)) {
+			// 	return response()->json([
+			// 		'success' => false,
+			// 		'message' => 'El correo ya existe'
+			// 	])->setStatusCode(400);
+			// }
 
 
 			$user = $this->repository->find($id);
