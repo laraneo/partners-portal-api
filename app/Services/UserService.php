@@ -103,7 +103,6 @@ class UserService {
 
 		public function checkLogin() {
 			if (Auth::check()) {
-				$token = auth()->user()->createToken('TutsForWeb')->accessToken;
 				$user = auth()->user();
 				$user->roles = auth()->user()->getRoles();
 				$newRoles = Role::where('id', auth()->user()->id)->get();
