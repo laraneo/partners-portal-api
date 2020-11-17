@@ -107,7 +107,7 @@ class SoapService
           $i = 0;
             $saldo = explode(";", $response);
             if($saldo[0]) {
-              return number_format((float)$saldo[0],2);
+              return (float)$saldo[0];
             }
             return 0;
         }

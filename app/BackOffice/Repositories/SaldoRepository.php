@@ -23,14 +23,15 @@ class SaldoRepository  {
         $cacheValidMinsParameter = $this->parameterModel->query()->where('parameter', 'CACHE_VALID_MINS')->first();
         $newArray = array();
         $fechaCache = \DB::connection('sqlsrv_backoffice')->select("SELECT DATEDIFF(MINUTE, MAX(dCreated), GETDATE()) minutes  from  portalpagos_Saldo where co_cli='".$share."'");
-        $data->saldo = number_format((float)$data->saldo,2);
-        $data->status = (string)$data->status;
+        
         //dd('fechacache '.$fechaCache[0]->minutes.'-- cacheValidMinsParameter '.$cacheValidMinsParameter->value );
         if(!$fechaCache[0]->minutes) {
             return response()->json([
                 'success' => false,
                 'message' => 'En estos momentos la informacion no esta disponible'
             ])->setStatusCode(400);
+        } else {
+
         }
 
         if($fechaCache[0]->minutes > $cacheValidMinsParameter->value ) {
@@ -39,7 +40,8 @@ class SaldoRepository  {
                  'message' => 'En estos momentos la informacion no esta disponible'
              ])->setStatusCode(400);
          }
-
+         $data->saldo = number_format((float)$data->saldo,2);
+         $data->status = (string)$data->status;
         return response()->json([
             'success' => true,
             'message' => 'Temporal',
@@ -53,7 +55,7 @@ class SaldoRepository  {
         $this->model->query()->where('co_cli', $user)->delete();
         $this->model->create([
             'co_cli' => $user, 
-            'saldo' => number_format((float)$data->saldo,2),
+            'saldo' => (float)$data->saldo,
             'saldo_vigencia' => $data->saldo,
             'status' => $data->status, 
             'dCreated' => Carbon::now(),

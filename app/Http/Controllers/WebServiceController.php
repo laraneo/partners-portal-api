@@ -39,13 +39,18 @@ class WebServiceController extends Controller
     $vigencia = $this->soapService->getSaldo();
     $vigencia = get_object_vars($vigencia);
     
+    if($vigencia['status'] == '-1' || $vigencia['status'] == '-4') { 
+      return $this->saldoService->index($user);
+    }
+
     if($vigencia['status'] >= 0) {
       $saldoVigencia = $vigencia['saldo'];
     } else {
-      $saldoVigencia = null;
+      $saldoVigencia = 0;
     }
     $data = (object)['saldo' => $saldo, 'status' => $vigencia['status'], 'saldo_vigencia' => $saldoVigencia ];
     $this->saldoRepository->deleteAndInsert($data);
+    $data = (object)['saldo' => number_format((float)$saldo,2), 'status' => $vigencia['status'], 'saldo_vigencia' => $saldoVigencia ];
     return response()->json([
       'cache' => true,
       'success' => true,
