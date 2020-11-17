@@ -54,6 +54,7 @@ class SaldoRepository  {
         $this->model->create([
             'co_cli' => $user, 
             'saldo' => number_format((float)$data->saldo,2),
+            'saldo_vigencia' => number_format((float)$data->saldo_vigencia,2),
             'status' => $data->status, 
             'dCreated' => Carbon::now(),
         ]);

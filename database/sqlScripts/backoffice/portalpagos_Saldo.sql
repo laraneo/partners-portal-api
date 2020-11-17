@@ -1,0 +1,1 @@
+ALTER TABLE portalpagos_Saldo ADD saldo_vigencia varchar(255) NULL;

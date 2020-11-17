@@ -14,6 +14,7 @@ class Saldo extends Model
         'saldo', 
         'status', 
         'dCreated',
+        'saldo_vigencia'
     ];
 
     public $timestamps = false;
