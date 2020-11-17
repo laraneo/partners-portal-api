@@ -42,7 +42,7 @@ class WebServiceController extends Controller
     if($vigencia['status'] >= 0) {
       $saldoVigencia = $vigencia['saldo'];
     } else {
-      $saldoVigencia = 0;
+      $saldoVigencia = null;
     }
     $data = (object)['saldo' => $saldo, 'status' => $vigencia['status'], 'saldo_vigencia' => $saldoVigencia ];
     $this->saldoRepository->deleteAndInsert($data);
