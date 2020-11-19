@@ -16,6 +16,8 @@ Route::prefix('api/v1')->group(function () {
     Route::post('/auth/register', 'PassportController@register');
     Route::get('/parameter-logo', 'ParameterController@getLogo');
     Route::get('/logout', 'PassportController@logout');
+    Route::post('/forgot-password', 'UserController@forgotPassword');
+
     Route::middleware('auth:api')->group(function () {
 
         

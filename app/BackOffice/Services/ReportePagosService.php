@@ -2,7 +2,9 @@
 
 namespace App\BackOffice\Services;
 
+use App\Services\SoapService;
 use App\BackOffice\Repositories\ReportePagosRepository;
+use App\BackOffice\Repositories\TasaCambioRepository;
 
 use Illuminate\Http\Request;
 use Storage;
@@ -11,8 +13,12 @@ use Carbon\Carbon;
 
 class ReportePagosService {
 
-	public function __construct(ReportePagosRepository $repository) {
-		$this->repository = $repository ;
+	public function __construct(
+		ReportePagosRepository $repository,
+		TasaCambioRepository $tasaCambioRepository
+		) {
+		$this->repository = $repository;
+		$this->tasaCambioRepository = $tasaCambioRepository;
 	}
 
 	public function index($pagination) {
@@ -49,10 +55,12 @@ class ReportePagosService {
 
 	public function create($attributes) {
 		$date = Carbon::now()->format('Y-m-d');
+		$tasaDelDia = $this->tasaCambioRepository->all();
 		$attributes['dFechaRegistro'] = Carbon::now()->format('Y-m-d H:i:s');
 		$attributes['dateSync'] = null;
 		$attributes['isSync'] = 0;
 		$attributes['dCreated'] = Carbon::now();
+		$attributes['nTasa'] = $tasaDelDia->dTasa ? $tasaDelDia->dTasa : null;
 		$data = $this->repository->create($attributes);
 		
 		try {

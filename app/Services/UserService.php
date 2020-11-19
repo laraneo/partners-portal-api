@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Role;
+use App\User;
 
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\UserRepository;
@@ -18,11 +19,13 @@ class UserService {
 		public function __construct(
 			UserRepository $repository,
 			LoginTokenService $loginTokenService,
-			ShareRepository $shareRepository
+			ShareRepository $shareRepository,
+			User $userModel
 			) {
 			$this->repository = $repository;
 			$this->loginTokenService = $loginTokenService;
 			$this->shareRepository = $shareRepository;
+			$this->userModel = $userModel;
 		}
 
 		public function index() {
@@ -164,5 +167,25 @@ class UserService {
 				'data' => $data
 			]);
 
+		}
+
+		public function forgotPassword($request) {
+			$isValid = $this->userModel->query()
+			->where('doc_id', $request['doc_id'])
+			->where('group_id', $request['group_id'])
+			->where('email', $request['email'])->first();
+
+			if($isValid) {
+				$attr = [ 'password' => $request['password'] ];
+				$this->repository->update($isValid->id, $attr);
+				return response()->json([
+					'success' => true,
+					'data' => 'Clave exitosa'
+				]);
+			}
+			return response()->json([
+				'success' => false,
+				'message' => 'Los datos de usuario no coinciden, intente de nuevo'
+			])->setStatusCode(400);
 		}
 }

@@ -34,6 +34,7 @@ class User extends Authenticatable
         'phone_number',
         'ControlSocios_people_id',
         'isPartner',
+        'doc_id'
     ];
 
     /**

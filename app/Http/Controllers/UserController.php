@@ -140,4 +140,17 @@ class UserController extends Controller
         $userRequest = $request->all();
         return $this->userService->updatePassword($userRequest);
     }
+
+        /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function forgotPassword(Request $request)
+    {
+        $userRequest = $request->all();
+        return $this->userService->forgotPassword($userRequest);
+    }
 }

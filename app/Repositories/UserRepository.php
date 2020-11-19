@@ -63,10 +63,12 @@ class UserRepository  {
         $this->share = $queryFilter->query('term');
         $requestData = ['name', 'username', 'email'];
         $search = $this->model->where(function($q) use($requestData, $searchQuery) {
-                    foreach ($requestData as $field) {
-                       $q->orWhere($field, 'like', "%{$searchQuery}%");
-                    }
-                  })->with('roles')->get();
+                      if($searchQuery) {
+                        foreach ($requestData as $field) {
+                          $q->orWhere($field, 'like', "%{$searchQuery}%");
+                       }
+                      }
+                  })->with('roles')->paginate($queryFilter->query('perPage'));
         return $search;
     }
     public function check($request)
@@ -80,6 +82,11 @@ class UserRepository  {
     }
 
     public function checkFieldBeforeUpdate($field, $value, $id)
+    {
+      return $this->model->where($field, $value)->where('id', '!=',$id)->first();
+    }
+
+    public function forgotPassword($attr)
     {
       return $this->model->where($field, $value)->where('id', '!=',$id)->first();
     }
