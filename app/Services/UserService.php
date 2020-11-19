@@ -185,7 +185,7 @@ class UserService {
 			}
 			return response()->json([
 				'success' => false,
-				'message' => 'Los datos de usuario no coinciden, intente de nuevo'
+				'message' => 'Los datos suministrados no coinciden con los registrados en nuestra base de datos, intente nuevamente'
 			])->setStatusCode(400);
 		}
 }
