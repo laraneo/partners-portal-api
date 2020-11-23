@@ -60,7 +60,7 @@ class ReportePagosService {
 		$attributes['dateSync'] = null;
 		$attributes['isSync'] = 0;
 		$attributes['dCreated'] = Carbon::now();
-		$attributes['nTasa'] = $tasaDelDia->dTasa ? $tasaDelDia->dTasa : null;
+		$attributes['nTasa'] = $tasaDelDia && $tasaDelDia->dTasa ? $tasaDelDia->dTasa : null;
 		$data = $this->repository->create($attributes);
 		
 		try {
