@@ -344,12 +344,12 @@ public function getTasaDelDia() {
     $attr  = [ 
       'co_mone' => 'US$',
       'dFecha' => Carbon::parse($tasa->fecha), 
-      'dTasa' => $tasa->tasa,
+      'dTasa' => $tasa->tasa ? $tasa->tasa : -1,
       'dCreated' => Carbon::now(),
     ];
+
     $this->tasaCambioRepository->store($attr);
-    $currentExchange = $this->tasaCambioRepository->getExchange($tasa->tasa);
-   
+    $currentExchange = $this->tasaCambioRepository->getExchange($tasa->tasa ? $tasa->tasa : -1);
     return $currentExchange;
   } catch(SoapFault $fault) {
       echo '<br>'.$fault;
