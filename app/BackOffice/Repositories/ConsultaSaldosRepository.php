@@ -66,7 +66,7 @@ class ConsultaSaldosRepository  {
                 'fec_emis' => $value->fec_emis, 
                 'fec_venc' => $value->fec_vence, 
                 'descrip' => $value->descrip, 
-                'saldo' => $value->saldo, 
+                'saldo' => number_format((float)$value->saldo,2), 
                 'total_fac' =>  number_format((float)$value->total_fac,2), 
                 'fec_emis_fact' => $value->fec_emis_fact, 
                 'co_cli2' => $value->co_cli2, 
