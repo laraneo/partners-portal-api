@@ -147,14 +147,14 @@ class SoapService
             }
             $i++;
         }
-
+        $this->consultaSaldosRepository->deleteAndInsert($newArrayToInsert);
         foreach ($newArraytoShow as $key => $value) {
           $newArraytoShow[$key]->originalAmount = $value->saldo;
           $newArraytoShow[$key]->saldo = number_format((float)$value->saldo,2);
           $newArraytoShow[$key]->total_fac = number_format((float)$value->total_fac,2);
           $newArraytoShow[$key]->acumulado = number_format((float)$value->acumulado,2);
         }
-        $this->consultaSaldosRepository->deleteAndInsert($newArrayToInsert);
+    
         return response()->json([
             'success' => true,
             'data' => $newArraytoShow,
@@ -295,7 +295,7 @@ class SoapService
         $i++;
       }
       $this->estadoCuentaRepository->deleteAndInsert($newArraytoInsert);
-      
+
       foreach ($newArraytoShow as $key => $value) {
         $newArraytoShow[$key]->saldo = number_format((float)$value->saldo,2);
         $newArraytoShow[$key]->total_fac = number_format((float)$value->total_fac,2);
