@@ -61,7 +61,7 @@ class ConsultaSaldosRepository  {
         $this->model->query()->where('co_cli', $user)->delete();
         foreach ($data as $key => $value) {
             $this->model->create([
-                'co_cli' => $value->co_cli, 
+                'co_cli' => $user, 
                 'fact_num' => $value->fact_num, 
                 'fec_emis' => $value->fec_emis, 
                 'fec_venc' => $value->fec_vence, 
