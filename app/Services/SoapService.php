@@ -129,7 +129,8 @@ class SoapService
             'token' => $this->getToken($this->domain),
         ])->GetSaldoDetalladoXMLResult;
         $i = 0;
-        $newArray = array();
+        $newArrayToInsert = array();
+        $newArraytoShow = array();
         foreach ($response as $key => $value) {
             if ($i==1) {
             $myxml = simplexml_load_string($value);				
@@ -140,21 +141,23 @@ class SoapService
                 $monto = $registros[$x]->saldo;
                 $acumulado = bcadd($acumulado, $monto, 2);
                 $registros[$x]->acumulado = $acumulado; 
-                array_push($newArray, $registros[$x]);
+                array_push($newArrayToInsert, $registros[$x]);
+                array_push($newArraytoShow, $registros[$x]);
             }
             }
             $i++;
         }
-        foreach ($newArray as $key => $value) {
-          $newArray[$key]->originalAmount = $value->saldo;
-          $newArray[$key]->saldo = number_format((float)$value->saldo,2);
-          $newArray[$key]->total_fac = number_format((float)$value->total_fac,2);
-          $newArray[$key]->acumulado = number_format((float)$value->acumulado,2);
+
+        foreach ($newArraytoShow as $key => $value) {
+          $newArraytoShow[$key]->originalAmount = $value->saldo;
+          $newArraytoShow[$key]->saldo = number_format((float)$value->saldo,2);
+          $newArraytoShow[$key]->total_fac = number_format((float)$value->total_fac,2);
+          $newArraytoShow[$key]->acumulado = number_format((float)$value->acumulado,2);
         }
-        $this->consultaSaldosRepository->deleteAndInsert($newArray);
+        $this->consultaSaldosRepository->deleteAndInsert($newArrayToInsert);
         return response()->json([
             'success' => true,
-            'data' => $newArray,
+            'data' => $newArraytoShow,
             'total' => $acumulado,
             'cache' => false,
         ]);
@@ -273,7 +276,8 @@ class SoapService
     try{
       $response = $client->GetEstadoCuentaXML($parametros)->GetEstadoCuentaXMLResult;
       $i = 0;
-      $newArray = array();
+      $newArraytoShow = array();
+      $newArraytoInsert = array();
       foreach ($response as $key => $value) {
         if ($i==1) {
           $myxml = simplexml_load_string($value);				
@@ -284,20 +288,21 @@ class SoapService
             $monto = $registros[$x]->total_fac;
             $acumulado = bcadd($acumulado, $monto, 2);
             $registros[$x]->acumulado = $acumulado; 
-            array_push($newArray, $registros[$x]);
+            array_push($newArraytoShow, $registros[$x]);
+            array_push($newArraytoInsert, $registros[$x]);
         }
         }
         $i++;
       }
-      foreach ($newArray as $key => $value) {
-        $newArray[$key]->saldo = number_format((float)$value->saldo,2);
-        $newArray[$key]->total_fac = number_format((float)$value->total_fac,2);
-        $newArray[$key]->acumulado = number_format((float)$value->acumulado,2);
+      foreach ($newArraytoShow as $key => $value) {
+        $newArraytoShow[$key]->saldo = number_format((float)$value->saldo,2);
+        $newArraytoShow[$key]->total_fac = number_format((float)$value->total_fac,2);
+        $newArraytoShow[$key]->acumulado = number_format((float)$value->acumulado,2);
       }
-      $this->estadoCuentaRepository->deleteAndInsert($newArray);
+      $this->estadoCuentaRepository->deleteAndInsert($newArraytoInsert);
       return response()->json([
         'success' => true,
-        'data' => $newArray,
+        'data' => $newArraytoShow,
         'total' => $acumulado,
         'cache' => false,
       ]);
