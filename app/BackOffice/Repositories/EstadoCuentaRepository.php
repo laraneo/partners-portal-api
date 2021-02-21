@@ -63,12 +63,12 @@ class EstadoCuentaRepository  {
         $this->model->query()->where('co_cli', $user)->delete();
         foreach ($data as $key => $value) {
             $this->model->create([
-                'co_cli' => $value->co_cli, 
+                'co_cli' => $user, 
                 'fact_num' => $value->fact_num, 
                 'fec_emis' => Carbon::parse($value->fec_emis)->format('Y-m-d H:i:s'), 
                 'descrip' => $value->descrip, 
-                'total_fac' => $value->total_fac, 
-                'saldo' => $value->saldo, 
+                'total_fac' => number_format((float)$value->total_fac,2), 
+                'saldo' => number_format((float)$value->saldo,2), 
                 'tipo' => $value->tipo, 
                 'dCreated' => Carbon::now(),
             ]);
