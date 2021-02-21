@@ -67,8 +67,8 @@ class EstadoCuentaRepository  {
                 'fact_num' => $value->fact_num, 
                 'fec_emis' => Carbon::parse($value->fec_emis)->format('Y-m-d H:i:s'), 
                 'descrip' => $value->descrip, 
-                'total_fac' => floatval($value->total_fac), 
-                'saldo' =>  floatval($value->saldo), 
+                'total_fac' => (float)$value->total_fac, 
+                'saldo' =>  (float)$value->saldo, 
                 'tipo' => $value->tipo, 
                 'dCreated' => Carbon::now(),
             ]);
