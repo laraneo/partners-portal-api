@@ -66,6 +66,10 @@ class WebServiceController extends Controller
     return $this->soapService->getUnpaidInvoices($user);
   }
 
+  public function getRenglonesDocumento(Request $request)  {
+    return $this->soapService->getRenglonesDocumento($request['invoice']);
+  }
+
   public function getUnpaidInvoicesByShare(Request $request)  {
     return $this->soapService->getUnpaidInvoicesByShare($request['share']);
   }

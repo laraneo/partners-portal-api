@@ -40,6 +40,8 @@ class SoapService
   }
 
   public function getWebServiceClient(string $url) {
+    ini_set('soap.wsdl_cache_enabled',0);
+    ini_set('soap.wsdl_cache_ttl',0);
     $opts = array(
       'ssl' => array('ciphers'=>'RC4-SHA', 'verify_peer'=>false, 'verify_peer_name'=>false)
     );
@@ -51,6 +53,10 @@ class SoapService
       'trace' => 1, 'exceptions' => 1, 
       "connection_timeout" => 180, 
       'stream_context' => stream_context_create($opts),
+      'cache_wsdl' => WSDL_CACHE_NONE,
+      'keep_alive' => false,
+      'ssl_method' => SOAP_SSL_METHOD_SSLv3,
+      'location' => $url,
     );
     try {
       return new SoapClient($url,$params); 
@@ -161,6 +167,44 @@ class SoapService
             'total' => $acumulado,
             'cache' => false,
         ]);
+    }
+    catch(SoapFault $fault) {
+        echo '<br>'.$fault;
+        return response()->json([
+          'success' => false,
+          'message' => 'En estos momentos la informacion no esta disponible'
+      ])->setStatusCode(500);
+    }
+  }
+
+  public function getRenglonesDocumento($doc) {
+    try{
+        $url = $this->urlExt;
+        $client = $this->getWebServiceClient($url);
+        $response = $client->GetRenglonesDocumentoXML([
+            'doc_nro' => $doc,
+            'token' => $this->getToken($this->domain),
+        ])->GetRenglonesDocumentoXMLResult;
+        $i = 0;
+        $newArrayToInsert = array();
+        $newArraytoShow = array();
+        foreach ($response as $key => $value) {
+            if ($i==1) {
+            $myxml = simplexml_load_string($value);				
+            $registros= $myxml->NewDataSet->Table;
+            $arrlength = @count($registros);
+            $acumulado = 0;
+            for($x = 0; $x < $arrlength; $x++) {
+              array_push($newArrayToInsert, $registros[$x]);
+              array_push($newArraytoShow, $registros[$x]);
+          }
+            }
+            $i++;
+        }
+        return response()->json([
+          'success' => true,
+          'data' => $newArrayToInsert,
+      ]);
     }
     catch(SoapFault $fault) {
         echo '<br>'.$fault;
