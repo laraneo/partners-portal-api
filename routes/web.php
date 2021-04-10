@@ -215,6 +215,7 @@ Route::prefix('api/v1')->group(function () {
         Route::get('/set-order', 'WebServiceController@getOrder');
         Route::get('/set-invoice-payment', 'WebServiceController@setManualInvoicePayment');
         Route::post('/set-order-channel', 'WebServiceController@setPaymentOrderChannel');
+        Route::post('/update-order-channel', 'WebServiceController@updatePaymentOrderChannel');
 
         Route::get('/get-tasa', 'TasaCambioController@index');
 

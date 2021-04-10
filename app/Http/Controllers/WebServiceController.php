@@ -140,7 +140,7 @@ class WebServiceController extends Controller
         $user = auth()->user();
         $currency = $this->parameterRepository->findByParameter('MONEDA_DEFAULT')['value'];
         $data = \DB::connection('sqlsrv_backoffice')->statement(
-            'exec sp_PortalProcesarPagoFacturaCanal ?,?,?,?,?,?,?',
+            'exec sp_PortalProcesarPagoFacturaCanal ?,?,?,?,?,?,?,?',
             [
                 $user->group_id,
                 $request['invoices'],
@@ -148,7 +148,41 @@ class WebServiceController extends Controller
                 $request['order'],
                 $request['channel'],
                 $currency,
-                $request['dTasa']
+                $request['dTasa'],
+                $request['reference']
+            ],
+        );
+        if (!$data) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de registro'
+            ])->setStatusCode(400);
+        }
+        if ($request['channel'] === 'PAYPAL') {
+            $data = \DB::connection('sqlsrv_backoffice')->statement(
+                'exec sp_PortalReportePagos_ActualizarStatus ?,?,?',
+                [
+                    $request['reference'],
+                    $request['order'],
+                    2
+                ],
+            );
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $data
+        ]);
+    }
+
+    public function updatePaymentOrderChannel(Request $request)
+    {
+        $data = \DB::connection('sqlsrv_backoffice')->statement(
+            'exec sp_PortalReportePagos_ActualizarStatus ?,?,?',
+            [
+                $request['reference'],
+                $request['order'],
+                $request['status']
             ],
         );
 
