@@ -30,7 +30,7 @@ class WebServiceController extends Controller
     $this->saldoRepository = $saldoRepository;
     }
 
-  public function getBalance(Request $request)  { 
+  public function getBalance(Request $request)  {
     $user = auth()->user()->group_id;
     if($request['isCache'] == "true") {
       return $this->saldoService->index($user);
@@ -38,8 +38,8 @@ class WebServiceController extends Controller
     $saldo = $this->soapService->getSaldoTotal();
     $vigencia = $this->soapService->getSaldo();
     $vigencia = get_object_vars($vigencia);
-    
-    if($vigencia['status'] == '-1' || $vigencia['status'] == '-4') { 
+
+    if($vigencia['status'] == '-1' || $vigencia['status'] == '-4') {
       return $this->saldoService->index($user);
     }
 
@@ -89,18 +89,22 @@ class WebServiceController extends Controller
     }
     return $this->soapService->getStatusAccount();
   }
-  
+
+  public function getStatusAccountByShare($share, Request $request)  {
+    return $this->soapService->getStatusAccountByShare($share);
+  }
+
   // @group_id = N'0010-0010',
   // @invoices = N'0010-0010-4-2020-00',
   // @amount = 120,
   // @paymentNumber = N'96459089232984613'
-  
+
   public function getOrder(Request $request){
-    
+
     $user = auth()->user()->group_id;
-    $data = \DB::connection('sqlsrv_backoffice')->statement('exec sp_PortalProcesarPagoFactura ?,?,?,?,?', 
-    array($user,$request['invoice'], $request['amount'],$request['order'], $request['dTasa']));  
-   
+    $data = \DB::connection('sqlsrv_backoffice')->statement('exec sp_PortalProcesarPagoFactura ?,?,?,?,?',
+    array($user,$request['invoice'], $request['amount'],$request['order'], $request['dTasa']));
+
     if(!$data) {
       return response()->json([
         'success' => false,
@@ -113,7 +117,7 @@ class WebServiceController extends Controller
       'message' => $data
     ]);
     // $data = \DB::connection('sqlsrv_backoffice')->select('
-    // EXEC backoffice.dbo.sp_PortalProcesarPagoFactura group_id,invoices,amount,paymentNumber', 
+    // EXEC backoffice.dbo.sp_PortalProcesarPagoFactura group_id,invoices,amount,paymentNumber',
     // array("'3453453'",'"34534"', 120,'345345'));
 
     // $db = DB::connection('sqlsrv_backoffice')->getPdo();
@@ -132,7 +136,7 @@ class WebServiceController extends Controller
 
 //     $pdo = \DB::connection('sqlsrv_backoffice')->getPdo();
 //     $sql = 'EXEC backoffice.dbo.sp_PortalProcesarPagoFactura group_id,invoices,amount,paymentNumber';
-    
+
 //     $stmt = $pdo->query($sql);
 //     $stmt->bindParam(1, 'asdasd', PDO::PARAM_STR, 4000);
 //     $stmt->bindParam(2, 'asdasd', PDO::PARAM_STR, 4000);
@@ -150,11 +154,11 @@ class WebServiceController extends Controller
   }
 
   public function setManualInvoicePayment(Request $request){
-    
+
     $user = auth()->user()->group_id;
-    $data = \DB::connection('sqlsrv_backoffice')->statement('exec sp_PortalPagoFacturaManual ?,?,?,?,?', 
-    array($request['share'],$request['numFactura'], $request['idPago'], $request['fechaPago'], 'MANUAL'));  
-   
+    $data = \DB::connection('sqlsrv_backoffice')->statement('exec sp_PortalPagoFacturaManual ?,?,?,?,?',
+    array($request['share'],$request['numFactura'], $request['idPago'], $request['fechaPago'], 'MANUAL'));
+
     if(!$data) {
       return response()->json([
         'success' => false,
@@ -176,5 +180,5 @@ class WebServiceController extends Controller
       'data' => $data
     ]);
   }
-   
+
 }

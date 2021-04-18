@@ -20,7 +20,7 @@ Route::prefix('api/v1')->group(function () {
 
     Route::middleware('auth:api')->group(function () {
 
-        
+
 
         /*
         |--------------------------------------------------------------------------
@@ -83,7 +83,7 @@ Route::prefix('api/v1')->group(function () {
         Route::resource('/parameter', 'ParameterController');
         Route::get('/parameter-list', 'ParameterController@getList');
         Route::get('/parameter-search', 'ParameterController@search');
-        
+
 
         Route::resource('/locker', 'LockerController');
         Route::get('/locker-list', 'LockerController@getList');
@@ -113,7 +113,7 @@ Route::prefix('api/v1')->group(function () {
         Route::get('/note-search', 'NoteController@search');
         Route::get('/note-by-person', 'NoteController@getByPerson');
 
-        /* |-------------------------------------------------------------------------- |*/    
+        /* |-------------------------------------------------------------------------- |*/
 
         Route::get('/person-search', 'PersonController@search');
         Route::get('/search-person-to-assign-family', 'PersonController@searchPersonsToAssign');
@@ -158,7 +158,7 @@ Route::prefix('api/v1')->group(function () {
         Route::get('/share-movement-list', 'ShareMovementController@getList');
         Route::get('/share-movement-search', 'ShareMovementController@search');
         Route::get('/share-movement-last', 'ShareMovementController@getLastMovement');
-       
+
         Route::get('/search-to-assign', 'ShareController@searchToAssign');
 
         Route::resource('/access-control', 'AccessControlController');
@@ -169,7 +169,7 @@ Route::prefix('api/v1')->group(function () {
         Route::get('/access-control-partner-family-statistics', 'AccessControlController@getPartnersFamilyStatistics');
         Route::get('/access-control-guest-statistics', 'AccessControlController@getGuestStatistics');
 
-        
+
         Route::get('/banco-emisor', 'BancoEmisorController@index');
         Route::get('/banco-receptor', 'BancoReceptorController@index');
         Route::get('/monedas', 'MonedasController@index');
@@ -198,9 +198,9 @@ Route::prefix('api/v1')->group(function () {
         Route::get('/widget-search', 'WidgetController@search');
 
         Route::resource('/notificacion', 'NotificacionesController');
-        
+
         // Back Office
-        
+
         Route::resource('/reporte-pagos', 'ReportePagosController');
         Route::get('/reporte-pagos-filter', 'ReportePagosController@filter');
 
@@ -212,17 +212,18 @@ Route::prefix('api/v1')->group(function () {
         Route::get('/get-invoice-detail', 'WebServiceController@getRenglonesDocumento');
         Route::get('/get-unpaid-invoices-by-share', 'WebServiceController@getUnpaidInvoicesByShare');
         Route::get('/status-account', 'WebServiceController@getStatusAccount');
+        Route::get('/{share}/status-account', 'WebServiceController@getStatusAccountByShare');
         Route::get('/set-order', 'WebServiceController@getOrder');
         Route::get('/set-invoice-payment', 'WebServiceController@setManualInvoicePayment');
 
-        
+
         Route::get('/get-tasa', 'TasaCambioController@index');
 
         Route::resource('/applicants', 'ApplicantsController');
         Route::get('/applicants-list', 'ApplicantsController@getList');
         Route::get('/applicants-search', 'ApplicantsController@search');
         Route::get('/applicants-active', 'ApplicantsController@getCurrentApplicants');
-        
+
     });
 });
 
