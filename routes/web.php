@@ -212,6 +212,7 @@ Route::prefix('api/v1')->group(function () {
         Route::get('/get-invoice-detail', 'WebServiceController@getRenglonesDocumento');
         Route::get('/get-unpaid-invoices-by-share', 'WebServiceController@getUnpaidInvoicesByShare');
         Route::get('/status-account', 'WebServiceController@getStatusAccount');
+        Route::get('/{share}/status-account', 'WebServiceController@getStatusAccountByShare');
         Route::get('/set-order', 'WebServiceController@getOrder');
         Route::get('/set-invoice-payment', 'WebServiceController@setManualInvoicePayment');
         Route::post('/set-order-channel', 'WebServiceController@setPaymentOrderChannel');

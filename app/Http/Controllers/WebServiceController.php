@@ -109,10 +109,16 @@ class WebServiceController extends Controller
         return $this->soapService->getStatusAccount();
     }
 
-    // @group_id = N'0010-0010',
-    // @invoices = N'0010-0010-4-2020-00',
-    // @amount = 120,
-    // @paymentNumber = N'96459089232984613'
+    public function getStatusAccountByShare($share)
+    {
+        if (auth()->user()->role != -1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tiene permisos'
+            ])->setStatusCode(403);
+        }
+        return $this->soapService->getStatusAccountByShare($share);
+    }
 
     public function getOrder(Request $request)
     {
@@ -204,7 +210,7 @@ class WebServiceController extends Controller
         $user = auth()->user()->group_id;
         $data = \DB::connection('sqlsrv_backoffice')->statement(
             'exec sp_PortalPagoFacturaManual ?,?,?,?,?',
-            array($request['share'],$request['numFactura'], $request['idPago'], $request['fechaPago'], 'MANUAL')
+            array($request['share'], $request['numFactura'], $request['idPago'], $request['fechaPago'], 'MANUAL')
         );
 
         if (!$data) {
