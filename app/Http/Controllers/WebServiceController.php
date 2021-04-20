@@ -97,7 +97,7 @@ class WebServiceController extends Controller
 
     public function getStatusAccountByShare($share)
     {
-        if (auth()->user()->role !== -1) {
+        if (auth()->user()->role != -1) {
             return response()->json([
                 'success' => false,
                 'message' => 'No tiene permisos'
