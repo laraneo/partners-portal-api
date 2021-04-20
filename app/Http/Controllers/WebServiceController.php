@@ -11,21 +11,36 @@ use App\BackOffice\Services\ConsultaSaldosService;
 use App\BackOffice\Services\EstadoCuentaService;
 use App\BackOffice\Services\SaldoService;
 use App\BackOffice\Repositories\SaldoRepository;
+use App\Repositories\ParameterRepository;
 
 class WebServiceController extends Controller
 {
+    private $soapService;
+
+    private $consultaSaldosService;
+
+    private $estadoCuentaService;
+
+    private $saldoService;
+
+    private $saldoRepository;
+
+    private $parameterRepository;
+
     public function __construct(
         SoapService $soapService,
         ConsultaSaldosService $consultaSaldosService,
         EstadoCuentaService $estadoCuentaService,
         SaldoService $saldoService,
-        SaldoRepository $saldoRepository
+        SaldoRepository $saldoRepository,
+        ParameterRepository $parameterRepository
     ) {
         $this->soapService = $soapService;
         $this->consultaSaldosService = $consultaSaldosService;
         $this->estadoCuentaService = $estadoCuentaService;
         $this->saldoService = $saldoService;
         $this->saldoRepository = $saldoRepository;
+        $this->parameterRepository = $parameterRepository;
     }
 
     public function getBalance(Request $request)
@@ -47,9 +62,9 @@ class WebServiceController extends Controller
         } else {
             $saldoVigencia = 0;
         }
-        $data = (object)['saldo' => $saldo, 'status' => $vigencia['status'], 'saldo_vigencia' => $saldoVigencia];
+        $data = (object)['saldo' => $saldo, 'status' => $vigencia['status'], 'saldo_vigencia' => $saldoVigencia ];
         $this->saldoRepository->deleteAndInsert($data);
-        $data = (object)['saldo' => number_format((float)$saldo, 2), 'status' => $vigencia['status'], 'saldo_vigencia' => $saldoVigencia];
+        $data = (object)['saldo' => number_format((float)$saldo, 2), 'status' => $vigencia['status'], 'saldo_vigencia' => $saldoVigencia ];
         return response()->json([
             'cache' => true,
             'success' => true,
@@ -83,7 +98,6 @@ class WebServiceController extends Controller
             'success' => true,
             'data' => $data,
         ]);
-        ;
     }
 
     public function getStatusAccount(Request $request)
@@ -106,17 +120,76 @@ class WebServiceController extends Controller
         return $this->soapService->getStatusAccountByShare($share);
     }
 
-    // @group_id = N'0010-0010',
-    // @invoices = N'0010-0010-4-2020-00',
-    // @amount = 120,
-    // @paymentNumber = N'96459089232984613'
-
     public function getOrder(Request $request)
     {
         $user = auth()->user()->group_id;
         $data = \DB::connection('sqlsrv_backoffice')->statement(
             'exec sp_PortalProcesarPagoFactura ?,?,?,?,?',
-            array($user, $request['invoice'], $request['amount'], $request['order'], $request['dTasa'])
+            array($user,$request['invoice'], $request['amount'],$request['order'], $request['dTasa'])
+        );
+
+        if (!$data) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de registro'
+            ])->setStatusCode(400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $data
+        ]);
+    }
+
+    public function setPaymentOrderChannel(Request $request)
+    {
+        $user = auth()->user();
+        $currency = $this->parameterRepository->findByParameter('MONEDA_DEFAULT')['value'];
+        $data = \DB::connection('sqlsrv_backoffice')->statement(
+            'exec sp_PortalProcesarPagoFacturaCanal ?,?,?,?,?,?,?,?',
+            [
+                $user->group_id,
+                $request['invoices'],
+                $request['amount'],
+                $request['order'],
+                $request['channel'],
+                $currency,
+                $request['dTasa'],
+                $request['reference']
+            ],
+        );
+        if (!$data) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de registro'
+            ])->setStatusCode(400);
+        }
+        if ($request['channel'] === 'PAYPAL') {
+            $data = \DB::connection('sqlsrv_backoffice')->statement(
+                'exec sp_PortalReportePagos_ActualizarStatus ?,?,?',
+                [
+                    $request['reference'],
+                    $request['order'],
+                    2
+                ],
+            );
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $data
+        ]);
+    }
+
+    public function updatePaymentOrderChannel(Request $request)
+    {
+        $data = \DB::connection('sqlsrv_backoffice')->statement(
+            'exec sp_PortalReportePagos_ActualizarStatus ?,?,?',
+            [
+                $request['reference'],
+                $request['order'],
+                $request['status']
+            ],
         );
 
         if (!$data) {

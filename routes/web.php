@@ -215,7 +215,8 @@ Route::prefix('api/v1')->group(function () {
         Route::get('/{share}/status-account', 'WebServiceController@getStatusAccountByShare');
         Route::get('/set-order', 'WebServiceController@getOrder');
         Route::get('/set-invoice-payment', 'WebServiceController@setManualInvoicePayment');
-
+        Route::post('/set-order-channel', 'WebServiceController@setPaymentOrderChannel');
+        Route::post('/update-order-channel', 'WebServiceController@updatePaymentOrderChannel');
 
         Route::get('/get-tasa', 'TasaCambioController@index');
 
@@ -223,7 +224,6 @@ Route::prefix('api/v1')->group(function () {
         Route::get('/applicants-list', 'ApplicantsController@getList');
         Route::get('/applicants-search', 'ApplicantsController@search');
         Route::get('/applicants-active', 'ApplicantsController@getCurrentApplicants');
-
     });
 });
 
